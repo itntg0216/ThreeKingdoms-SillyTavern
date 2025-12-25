@@ -1,0 +1,933 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>汉末红颜录·快速创建角色</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Serif+SC:wght@400;500;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-color: #f5efe6;
+            --text-color: #4a3b31;
+            --border-color: #d3c5b3;
+            --border-strong-color: #785a4e;
+            --title-color: #5d4037;
+            --item-bg-color: rgba(253, 250, 245, 0.95);
+            --item-bg-hover-color: #e8ddcb;
+            --item-bg-selected-color: #d7c8b6;
+            --container-bg-color: rgba(240, 230, 210, 0.95);
+            --title-font: 'Cinzel', serif;
+            --body-font: 'Noto Serif SC', serif;
+        }
+
+        body {
+            font-family: var(--body-font);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 15px;
+            min-height: 100vh;
+            background-image: url('data:image/png;base64,iVBORw0KUAhEUgAAADIAAAAyCAMAAAAp4XiGAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAADdAAAA3QFwU6IHAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABbUExURQAAAP////f3+Pj4+fX19vb2+PT09Pj4+d/f4O/v8fPz9PX19vf3+Pn5+fb29/Hx8/T09fX19fX19////97e4Ojo6fHx8/Ly8/X19fX19fDw8vX19e/v8fj4+Pf3+AAAADSAx5YAAAAfdFJOUwAAAAAAAAAAAAAAAMA/z/BAgMBAwBCgwFBPT1BQUD9/Py8vRkQoCgAAAQBJREFUSMftlVuSgyAQhUNtZRAScQExPff9H3CBQsEMZDDpOf2EM8P9NZnZzI5KEfEPMGOIsIApFgAAFDtAAmWiIAMAWGDVQDQAAkYMm9RhpJbrBLhZ1Z6yGvWq2xWA92i6ZXRtC50EAADg0n8ErvDY2esxAEBW96Fz0Npq7H0AGBzh6MrAgAAgAEEyNiyL00mDgCsvt9jX6gAEEPg2pS8HAABgB2b0ONnuaR4AQDG9OQCAfQD8XRsBACJmk/+1WwUALg7A8IUBjgh0JGBgAJY2YB+S/VB9aKjpx5EDP5HAPk7Jm4tJgLeJ3I0LANT3/k7K/r5Q/AAAFYxxfYq1LAAAAABJRU5ErkJggg==');
+            background-repeat: repeat;
+        }
+
+        .selector-scroll {
+            border: 2px solid var(--border-strong-color);
+            border-radius: 12px;
+            padding: 20px 15px;
+            background-color: var(--container-bg-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .page-super-title {
+            font-family: var(--title-font);
+            font-weight: 700;
+            text-align: center;
+            font-size: 2em;
+            color: var(--title-color);
+            margin: 10px 0 15px;
+            letter-spacing: 1px;
+        }
+
+        .ornamental-divider {
+            border: 0;
+            height: 1px;
+            background-color: var(--border-color);
+            position: relative;
+            margin: 15px auto;
+            width: 70%;
+        }
+
+        .ornamental-divider::after {
+            content: '❖';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--container-bg-color);
+            padding: 0 12px;
+            color: var(--title-color);
+            font-size: 1.4em;
+        }
+
+        .main-title {
+            font-family: var(--title-font);
+            font-weight: 700;
+            color: var(--title-color);
+            text-align: center;
+            margin: 0 0 15px;
+            font-size: 1.5em;
+        }
+
+        .instructions {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #6a514d;
+            line-height: 1.5;
+        }
+
+        /* 切换标签（预设/自定义） */
+        .tab-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--item-bg-color);
+            color: var(--title-color);
+            font-family: var(--body-font);
+            font-weight: 500;
+            font-size: 1em;
+            cursor: pointer;
+            text-align: center;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tab-button.active {
+            background-color: var(--item-bg-selected-color);
+            border-color: var(--border-strong-color);
+            font-weight: 700;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 按钮样式（超大触摸区域） */
+        .btn {
+            font-family: var(--body-font);
+            font-weight: 500;
+            font-size: 1.05em;
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .btn-primary {
+            background-color: var(--item-bg-selected-color);
+            color: var(--title-color);
+            border: 1px solid var(--border-strong-color);
+        }
+
+        .btn-secondary {
+            background-color: var(--item-bg-color);
+            color: var(--title-color);
+            border: 1px solid var(--border-color);
+            margin-top: 10px;
+        }
+
+        .btn:hover, .btn:active {
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 预设场景列表 */
+        .scene-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .scene-item {
+            background: var(--item-bg-color);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1em;
+        }
+
+        .scene-item.selected {
+            background-color: var(--item-bg-selected-color);
+            border-color: var(--border-strong-color);
+            color: var(--title-color);
+            font-weight: 500;
+        }
+
+        .scene-item:hover, .scene-item:active {
+            border-color: var(--border-strong-color);
+            transform: translateX(3px);
+        }
+
+        /* 表单样式 */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--title-color);
+            font-size: 1em;
+        }
+
+        .form-input {
+            padding: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: var(--body-font);
+            font-size: 1em;
+            background-color: var(--item-bg-color);
+            color: var(--text-color);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--border-strong-color);
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            flex: 1 1 calc(50% - 4px);
+            min-width: 140px;
+            font-size: 0.9em;
+        }
+
+        .radio-option input {
+            accent-color: var(--border-strong-color);
+            transform: scale(1.2);
+            margin-right: 5px;
+        }
+
+        .radio-option.selected {
+            background-color: var(--item-bg-selected-color);
+            border-color: var(--title-color);
+        }
+
+        /* 属性滑块 */
+        .stats-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .stat-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-name {
+            font-weight: 500;
+        }
+
+        .stat-value {
+            color: var(--border-strong-color);
+            font-weight: 700;
+        }
+
+        .stat-slider {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background-color: var(--border-color);
+            accent-color: var(--border-strong-color);
+            cursor: pointer;
+        }
+
+        .stat-desc {
+            font-size: 0.85em;
+            color: #6a514d;
+        }
+
+        .total-stats {
+            text-align: center;
+            font-size: 0.9em;
+            color: var(--title-color);
+            margin-top: 5px;
+        }
+
+        /* 自定义输入组 */
+        .custom-input-group {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .custom-input-group.active {
+            display: block;
+        }
+
+        /* 剧情选择页 */
+        #plot-step {
+            display: none;
+        }
+
+        #plot-step.active {
+            display: block;
+        }
+
+        .plot-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .plot-item {
+            background: var(--item-bg-color);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95em;
+        }
+
+        .plot-item.selected {
+            background-color: var(--item-bg-selected-color);
+            border-color: var(--border-strong-color);
+            color: var(--title-color);
+            font-weight: 500;
+        }
+
+        .scenario-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: var(--body-font);
+            font-size: 1em;
+            background-color: var(--item-bg-color);
+            color: var(--text-color);
+            resize: vertical;
+            margin-top: 10px;
+        }
+
+        /* 角色摘要 */
+        #char-summary {
+            line-height: 1.8;
+            font-size: 0.95em;
+            margin-bottom: 20px;
+        }
+
+        #char-summary h3 {
+            font-family: var(--title-font);
+            color: var(--title-color);
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        #plot-summary {
+            line-height: 1.6;
+            font-size: 0.95em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="selector-scroll">
+        <h1 class="page-super-title">汉末红颜录</h1>
+        <hr class="ornamental-divider" />
+
+        <!-- 核心内容区：直接显示合并后的页面 -->
+        <div id="main-step" class="active">
+            <h2 class="main-title">创建你的汉末角色</h2>
+            <p class="instructions">选择预设场景快速开局，或自定义专属红颜角色</p>
+
+            <!-- 切换标签：预设场景 / 自定义角色 -->
+            <div class="tab-group">
+                <button class="tab-button active" data-tab="scene-tab">选择预设场景</button>
+                <button class="tab-button" data-tab="custom-tab">自定义角色</button>
+            </div>
+
+            <!-- 预设场景内容 -->
+            <div class="tab-content active" id="scene-tab">
+                <h3 class="main-title" style="font-size: 1.3em; margin-bottom: 15px;">预设开局场景</h3>
+                <ul class="scene-list">
+                    <li class="scene-item" data-scene="1">洛阳深宅·诸侯之妻</li>
+                    <li class="scene-item" data-scene="2">襄阳别院·名士之妻</li>
+                    <li class="scene-item" data-scene="3">江东水乡·将门之妻</li>
+                    <li class="scene-item" data-scene="4">涿县农家·平民之妻</li>
+                    <li class="scene-item" data-scene="5">长安古道·流亡贵女</li>
+                    <li class="scene-item" data-scene="6">成都市井·商户之妻</li>
+                </ul>
+                <button class="btn btn-primary" data-button-id="scene-confirm">确认场景，选择剧情</button>
+                <button class="btn btn-secondary" data-button-id="reset-scene">重置选择</button>
+            </div>
+
+            <!-- 自定义角色内容 -->
+            <div class="tab-content" id="custom-tab">
+                <h3 class="main-title" style="font-size: 1.3em; margin-bottom: 15px;">自定义专属红颜</h3>
+                <form id="custom-form" data-form-id="custom-form">
+                    <!-- 基础信息 -->
+                    <div class="form-group">
+                        <label class="form-label">姓名</label>
+                        <input type="text" class="form-input" id="charName" placeholder="如：甄氏、蔡琰" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">身份背景（贴合史实）</label>
+                        <input type="text" class="form-input" id="charIdentity" placeholder="如：郡守之女、绣坊主母、医馆传人" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">年龄（16-40岁）</label>
+                        <input type="number" class="form-input" id="charAge" min="16" max="40" value="18" required>
+                    </div>
+
+                    <!-- 选择项 -->
+                    <div class="form-group">
+                        <label class="form-label">配偶情况</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="spouse" value="诸侯名将" checked> 诸侯/名将
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="spouse" value="名士文人"> 名士/文人
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="spouse" value="地方官吏"> 地方官吏
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="spouse" value="平民商户"> 平民/商户
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="spouse" value="暂无配偶"> 暂无配偶
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">家族背景</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="family" value="名门望族" checked> 名门望族
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="family" value="书香门第"> 书香门第
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="family" value="武将世家"> 武将世家
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="family" value="普通平民"> 普通平民
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="family" value="败落家族"> 败落家族
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 核心属性 -->
+                    <div class="form-group">
+                        <label class="form-label">核心属性（总分35点）</label>
+                        <div class="stats-container">
+                            <div class="stat-item">
+                                <div class="stat-label">
+                                    <span class="stat-name">武力</span>
+                                    <span class="stat-value" id="forceValue">5</span>
+                                </div>
+                                <input type="range" class="stat-slider" id="forceSlider" min="1" max="10" value="5">
+                                <p class="stat-desc">近战、马术箭术</p>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">
+                                    <span class="stat-name">体魄</span>
+                                    <span class="stat-value" id="bodyValue">7</span>
+                                </div>
+                                <input type="range" class="stat-slider" id="bodySlider" min="1" max="10" value="7">
+                                <p class="stat-desc">体质、抗疾能力</p>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">
+                                    <span class="stat-name">智谋</span>
+                                    <span class="stat-value" id="wisdomValue">7</span>
+                                </div>
+                                <input type="range" class="stat-slider" id="wisdomSlider" min="1" max="10" value="7">
+                                <p class="stat-desc">谋略、应变能力</p>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">
+                                    <span class="stat-name">领导</span>
+                                    <span class="stat-value" id="leadValue">5</span>
+                                </div>
+                                <input type="range" class="stat-slider" id="leadSlider" min="1" max="10" value="5">
+                                <p class="stat-desc">统筹、人心把控</p>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">
+                                    <span class="stat-name">魅力</span>
+                                    <span class="stat-value" id="charmValue">11</span>
+                                </div>
+                                <input type="range" class="stat-slider" id="charmSlider" min="1" max="10" value="11">
+                                <p class="stat-desc">容貌、人际吸引力</p>
+                            </div>
+                        </div>
+                        <p class="total-stats">当前总分：<span id="totalStats">35</span>（已达上限）</p>
+                    </div>
+
+                    <!-- 地点和目标 -->
+                    <div class="form-group">
+                        <label class="form-label">初始地点</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="location" value="洛阳" checked> 洛阳
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="location" value="襄阳"> 襄阳
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="location" value="自定义"> 自定义
+                            </label>
+                        </div>
+                        <div class="custom-input-group" id="customLocationGroup">
+                            <input type="text" class="form-input" id="customLocation" placeholder="如：庐江、汉中">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">人生目标</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="goal" value="相夫教子" checked> 相夫教子
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="goal" value="辅佐夫君"> 辅佐夫君
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="goal" value="自定义"> 自定义
+                            </label>
+                        </div>
+                        <div class="custom-input-group" id="customGoalGroup">
+                            <input type="text" class="form-input" id="customGoal" placeholder="如：传承医术、开设织坊">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" data-button-id="custom-confirm">确认角色，选择剧情</button>
+                    <button type="button" class="btn btn-secondary" data-button-id="reset-custom">重置表单</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 剧情选择页 -->
+        <div id="plot-step">
+            <h2 class="main-title">选择初始剧情</h2>
+            <p class="instructions">挑选开局剧情，或自定义专属开篇</p>
+            <ul class="plot-list">
+                <li class="plot-item" data-plot="1">深宅夜话·夫君欲起兵讨贼</li>
+                <li class="plot-item" data-plot="2">乱世流亡·带族人寻找安身之处</li>
+                <li class="plot-item" data-plot="3">医馆救人·战乱中救治乡邻</li>
+                <li class="plot-item" data-plot="4">别院逢友·偶遇名士共论天下</li>
+                <li class="plot-item" data-plot="5">商户危机·出面化解经商困境</li>
+                <li class="plot-item" data-plot="custom">自定义初始剧情</li>
+            </ul>
+            <div id="customPlotGroup" class="custom-input-group">
+                <label class="form-label">自定义剧情</label>
+                <textarea class="scenario-textarea" id="customPlot" placeholder="例：你是庐江周氏之女，嫁与孙策为妻，今日孙策归来告知欲联合周瑜图谋江东..."></textarea>
+            </div>
+            <button class="btn btn-primary" data-button-id="plot-confirm">确认创建，开启旅程</button>
+            <button class="btn btn-secondary" data-button-id="back-to-main">返回上一步</button>
+        </div>
+
+        <!-- 角色创建成功页 -->
+        <div id="success-step" style="display: none; text-align: center; padding: 10px 0;">
+            <h2 class="main-title">角色创建成功！</h2>
+            <div class="control-panel-container" style="padding: 20px 15px; text-align: left;">
+                <div id="char-summary">
+                    <!-- 角色摘要 -->
+                </div>
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border-color);">
+                    <h3 style="font-family: var(--title-font); color: var(--title-color); margin-bottom: 10px; font-size: 1.2em;">初始剧情</h3>
+                    <p id="plot-summary"></p>
+                </div>
+            </div>
+            <button class="btn btn-primary" data-button-id="start-game">开启汉末红颜之旅</button>
+        </div>
+    </div>
+
+    <script>
+        // 适配SillyTavern全局对象
+        const ST = window.SillyTavern || {};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 全局状态（极简设计，减少数据传递）
+            const state = {
+                selectedScene: null,
+                selectedPlot: null,
+                customCharData: null,
+                stats: { force: 5, body: 7, wisdom: 7, lead: 5, charm: 11 },
+                currentTab: 'scene-tab'
+            };
+
+            // DOM元素
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const sceneItems = document.querySelectorAll('.scene-item');
+            const plotItems = document.querySelectorAll('.plot-item');
+            const customForm = document.getElementById('custom-form');
+            const mainStep = document.getElementById('main-step');
+            const plotStep = document.getElementById('plot-step');
+            const successStep = document.getElementById('success-step');
+
+            // 初始化：绑定所有事件（只绑定一次，避免冲突）
+            initEvents();
+            initStats();
+
+            // 1. 标签切换（预设/自定义）
+            function initEvents() {
+                // 标签切换
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const tabId = tab.dataset.tab;
+                        state.currentTab = tabId;
+
+                        // 更新标签样式
+                        tabs.forEach(t => t.classList.remove('active'));
+                        tabContents.forEach(c => c.classList.remove('active'));
+                        tab.classList.add('active');
+                        document.getElementById(tabId).classList.add('active');
+                    });
+                });
+
+                // 预设场景选择
+                sceneItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        state.selectedScene = item.dataset.scene;
+                        sceneItems.forEach(i => i.classList.remove('selected'));
+                        item.classList.add('selected');
+                    });
+                });
+
+                // 重置场景选择
+                bindButton('reset-scene', () => {
+                    state.selectedScene = null;
+                    sceneItems.forEach(i => i.classList.remove('selected'));
+                });
+
+                // 确认场景，进入剧情选择
+                bindButton('scene-confirm', () => {
+                    if (!state.selectedScene) {
+                        alert('请选择一个预设场景');
+                        return;
+                    }
+
+                    // 加载预设角色数据
+                    const sceneMap = {
+                        '1': { name: '甄氏', identity: '诸侯之妻', age: 20, spouse: '诸侯名将', family: '名门望族', location: '洛阳', goal: '辅佐夫君', stats: { force: 4, body: 6, wisdom: 8, lead: 6, charm: 11 } },
+                        '2': { name: '蔡琰', identity: '名士之妻', age: 19, spouse: '名士文人', family: '书香门第', location: '襄阳', goal: '扬名立万', stats: { force: 3, body: 5, wisdom: 9, lead: 4, charm: 10 } },
+                        '3': { name: '吴苋', identity: '将门之妻', age: 22, spouse: '诸侯名将', family: '武将世家', location: '江东', goal: '守护家族', stats: { force: 7, body: 8, wisdom: 6, lead: 7, charm: 7 } },
+                        '4': { name: '王氏', identity: '平民之妻', age: 18, spouse: '平民商户', family: '普通平民', location: '涿县', goal: '相夫教子', stats: { force: 5, body: 8, wisdom: 5, lead: 4, charm: 8 } },
+                        '5': { name: '刘氏', identity: '流亡贵女', age: 21, spouse: '暂无配偶', family: '败落家族', location: '长安', goal: '乱世求生', stats: { force: 4, body: 7, wisdom: 8, lead: 5, charm: 9 } },
+                        '6': { name: '孙氏', identity: '商户之妻', age: 19, spouse: '平民商户', family: '普通平民', location: '成都', goal: '辅佐夫君', stats: { force: 3, body: 6, wisdom: 7, lead: 6, charm: 8 } }
+                    };
+
+                    state.customCharData = sceneMap[state.selectedScene];
+                    showPlotStep();
+                });
+
+                // 自定义表单：地点/目标切换
+                document.querySelectorAll('input[name="location"]').forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        document.getElementById('customLocationGroup').classList.toggle('active', radio.value === '自定义');
+                    });
+                });
+
+                document.querySelectorAll('input[name="goal"]').forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        document.getElementById('customGoalGroup').classList.toggle('active', radio.value === '自定义');
+                    });
+                });
+
+                // 自定义表单提交
+                customForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    submitCustomForm();
+                });
+
+                // 重置自定义表单
+                bindButton('reset-custom', () => {
+                    customForm.reset();
+                    state.stats = { force: 5, body: 7, wisdom: 7, lead: 5, charm: 11 };
+                    updateStatsDisplay();
+                });
+
+                // 剧情选择
+                plotItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        state.selectedPlot = item.dataset.plot;
+                        plotItems.forEach(i => i.classList.remove('selected'));
+                        item.classList.add('selected');
+                        document.getElementById('customPlotGroup').classList.toggle('active', state.selectedPlot === 'custom');
+                    });
+                });
+
+                // 确认剧情，进入成功页
+                bindButton('plot-confirm', () => {
+                    if (!state.selectedPlot) {
+                        alert('请选择一个剧情或自定义剧情');
+                        return;
+                    }
+
+                    if (state.selectedPlot === 'custom' && !document.getElementById('customPlot').value.trim()) {
+                        alert('请输入自定义剧情');
+                        return;
+                    }
+
+                    generateSummary();
+                    showSuccessStep();
+                });
+
+                // 返回上一步
+                bindButton('back-to-main', () => {
+                    state.selectedPlot = null;
+                    plotItems.forEach(i => i.classList.remove('selected'));
+                    document.getElementById('customPlotGroup').classList.remove('active');
+                    showMainStep();
+                });
+
+                // 开始游戏
+                bindButton('start-game', () => {
+                    startGame();
+                });
+            }
+
+            // 2. 属性滑块初始化
+            function initStats() {
+                const sliders = ['force', 'body', 'wisdom', 'lead', 'charm'];
+                sliders.forEach(type => {
+                    const slider = document.getElementById(`${type}Slider`);
+                    const valueDisplay = document.getElementById(`${type}Value`);
+
+                    slider.addEventListener('input', () => {
+                        const newValue = parseInt(slider.value);
+                        const oldValue = state.stats[type];
+                        const diff = newValue - oldValue;
+                        const currentTotal = Object.values(state.stats).reduce((a, b) => a + b, 0);
+                        const newTotal = currentTotal + diff;
+
+                        if (newTotal <= 35 && newTotal >= 5) {
+                            state.stats[type] = newValue;
+                            valueDisplay.textContent = newValue;
+                            document.getElementById('totalStats').textContent = newTotal;
+                        } else {
+                            slider.value = oldValue;
+                        }
+                    });
+                });
+                updateStatsDisplay();
+            }
+
+            // 更新属性显示
+            function updateStatsDisplay() {
+                const sliders = ['force', 'body', 'wisdom', 'lead', 'charm'];
+                sliders.forEach(type => {
+                    document.getElementById(`${type}Value`).textContent = state.stats[type];
+                    document.getElementById(`${type}Slider`).value = state.stats[type];
+                });
+                document.getElementById('totalStats').textContent = Object.values(state.stats).reduce((a, b) => a + b, 0);
+            }
+
+            // 3. 自定义表单提交处理
+            function submitCustomForm() {
+                const charName = document.getElementById('charName').value.trim();
+                const charIdentity = document.getElementById('charIdentity').value.trim();
+                const charAge = parseInt(document.getElementById('charAge').value);
+                const spouse = document.querySelector('input[name="spouse"]:checked').value;
+                const family = document.querySelector('input[name="family"]:checked').value;
+
+                // 处理地点
+                const locationRadio = document.querySelector('input[name="location"]:checked');
+                let location = locationRadio.value;
+                if (location === '自定义') {
+                    location = document.getElementById('customLocation').value.trim() || '洛阳';
+                }
+
+                // 处理目标
+                const goalRadio = document.querySelector('input[name="goal"]:checked');
+                let goal = goalRadio.value;
+                if (goal === '自定义') {
+                    goal = document.getElementById('customGoal').value.trim() || '相夫教子';
+                }
+
+                // 保存自定义角色数据
+                state.customCharData = {
+                    name: charName,
+                    identity: charIdentity,
+                    age: charAge,
+                    spouse: spouse,
+                    family: family,
+                    location: location,
+                    goal: goal,
+                    stats: state.stats
+                };
+
+                showPlotStep();
+            }
+
+            // 4. 页面切换函数（极简DOM操作，避免被拦截）
+            function showMainStep() {
+                mainStep.style.display = 'block';
+                plotStep.style.display = 'none';
+                successStep.style.display = 'none';
+            }
+
+            function showPlotStep() {
+                mainStep.style.display = 'none';
+                plotStep.style.display = 'block';
+                successStep.style.display = 'none';
+            }
+
+            function showSuccessStep() {
+                mainStep.style.display = 'none';
+                plotStep.style.display = 'none';
+                successStep.style.display = 'block';
+            }
+
+            // 5. 生成角色摘要
+            function generateSummary() {
+                const char = state.customCharData;
+                const plotText = getPlotText();
+
+                document.getElementById('char-summary').innerHTML = `
+                    <h3>${char.name} · 汉末红颜档案</h3>
+                    <p><strong>身份背景：</strong>${char.identity}</p>
+                    <p><strong>年龄：</strong>${char.age}岁</p>
+                    <p><strong>配偶情况：</strong>${char.spouse}</p>
+                    <p><strong>家族背景：</strong>${char.family}</p>
+                    <p><strong>初始地点：</strong>${char.location}</p>
+                    <p><strong>人生目标：</strong>${char.goal}</p>
+                    <p style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-color);">
+                        <strong>核心属性：</strong><br>
+                        武力：${char.stats.force} · 体魄：${char.stats.body} · 智谋：${char.stats.wisdom} · 领导：${char.stats.lead} · 魅力：${char.stats.charm}
+                    </p>
+                `;
+
+                document.getElementById('plot-summary').textContent = plotText;
+            }
+
+            // 获取剧情文本
+            function getPlotText() {
+                const plotMap = {
+                    '1': '深宅夜话·夫君欲起兵讨贼，问你意见——乱世将至，你是劝他谨慎行事，还是支持他建功立业？',
+                    '2': '乱世流亡·家族遭兵祸，你带着族人寻找安身之处——前路漫漫，是投奔亲友，还是另寻世外桃源？',
+                    '3': '医馆救人·战乱中瘟疫横行，你凭医术救治乡邻——药材匮乏，是优先救治富人换得物资，还是坚守医者仁心不分贵贱？',
+                    '4': '别院逢友·游学途中偶遇名士，共论天下大势——对方邀你同行辅佐明主，你是欣然应允，还是坚守本心独善其身？',
+                    '5': '商户危机·夫君经商遇劫，货物被劫、资金短缺——你是出面周旋权贵讨回公道，还是另寻商机重振家业？',
+                    'custom': document.getElementById('customPlot').value.trim()
+                };
+                return plotMap[state.selectedPlot];
+            }
+
+            // 6. 启动游戏（同步到SillyTavern）
+            function startGame() {
+                if (!ST.chat) {
+                    alert('角色创建成功！请在SillyTavern中开启对话');
+                    return;
+                }
+
+                const char = state.customCharData;
+                const plotText = getPlotText();
+                const startMessage = `汉末乱世，${char.name}（${char.identity}，${char.age}岁）于${char.location}开启人生旅程。${char.spouse}，${char.family}出身，心怀${char.goal}之志。属性：武力${char.stats.force}、体魄${char.stats.body}、智谋${char.stats.wisdom}、领导${char.stats.lead}、魅力${char.stats.charm}。开篇剧情：${plotText} 故事由此展开...`;
+
+                // 同步到SillyTavern聊天
+                if (ST.chat.length === 0) {
+                    ST.createChat && ST.createChat({
+                        title: `${char.name}的汉末之旅`,
+                        mes: startMessage,
+                        swipes: [startMessage]
+                    });
+                } else {
+                    ST.chat[0].mes = startMessage;
+                    ST.chat[0].swipes = [startMessage];
+                }
+
+                ST.saveChat && ST.saveChat();
+                ST.reloadCurrentChat && ST.reloadCurrentChat();
+                window.close && window.close();
+            }
+
+            // 工具函数：绑定按钮事件（适配SillyTavern和原生）
+            function bindButton(buttonId, callback) {
+                if (window.eventOnButton) {
+                    eventOnButton(buttonId, callback);
+                }
+                const button = document.querySelector(`[data-button-id="${buttonId}"]`);
+                if (button) {
+                    button.addEventListener('click', callback);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
