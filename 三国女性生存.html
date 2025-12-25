@@ -2,39 +2,324 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>汉末红颜录·自定义角色</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>汉末红颜录·自定义角色（移动端适配）</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Serif+SC:wght@400;500;700&display=swap');
 
-        .recheck-container {
-            text-align: center;
-            margin: 25px 0 10px 0;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
+        /* 基础样式优化（移动端优先） */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        .recheck-button {
+        :root {
+            --bg-color: #f5efe6;
+            --text-color: #4a3b31;
+            --border-color: #d3c5b3;
+            --border-strong-color: #785a4e;
+            --title-color: #5d4037;
+            --link-color: #8c6d62;
+            --item-bg-color: rgba(253, 250, 245, 0.95);
+            --item-bg-hover-color: #e8ddcb;
+            --item-bg-selected-color: #d7c8b6;
+            --pre-bg-color: rgba(215, 200, 182, 0.3);
+            --container-bg-color: rgba(240, 230, 210, 0.95);
+            --title-font: 'Cinzel', serif;
+            --body-font: 'Noto Serif SC', serif;
+        }
+
+        body {
+            font-family: var(--body-font);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 15px;
+            min-height: 100vh;
+            background-image: url('data:image/png;base64,iVBORw0KUAhEUgAAADIAAAAyCAMAAAAp4XiGAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAADdAAAA3QFwU6IHAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABbUExURQAAAP////f3+Pj4+fX19vb2+PT09Pj4+d/f4O/v8fPz9PX19vf3+Pn5+fb29/Hx8/T09fX19fX19////97e4Ojo6fHx8/Ly8/X19fX19fDw8vX19e/v8fj4+Pf3+AAAADSAx5YAAAAfdFJOUwAAAAAAAAAAAAAAAMA/z/BAgMBAwBCgwFBPT1BQUD9/Py8vRkQoCgAAAQBJREFUSMftlVuSgyAQhUNtZRAScQExPff9H3CBQsEMZDDpOf2EM8P9NZnZzI5KEfEPMGOIsIApFgAAFDtAAmWiIAMAWGDVQDQAAkYMm9RhpJbrBLhZ1Z6yGvWq2xWA92i6ZXRtC50EAADg0n8ErvDY2esxAEBW96Fz0Npq7H0AGBzh6MrAgAAgAEEyNiyL00mDgCsvt9jX6gAEEPg2pS8HAABgB2b0ONnuaR4AQDG9OQCAfQD8XRsBACJmk/+1WwUALg7A8IUBjgh0JGBgAJY2YB+S/VB9aKjpx5EDP5HAPk7Jm4tJgLeJ3I0LANT3/k7K/r5Q/AAAFYxxfYq1LAAAAABJRU5ErkJggg==');
+            background-repeat: repeat;
+            background-size: auto;
+        }
+
+        .selector-scroll {
+            border: 2px solid var(--border-strong-color);
+            border-radius: 12px;
+            padding: 20px 15px;
+            background-color: var(--container-bg-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .page-super-title {
+            font-family: var(--title-font);
+            font-weight: 700;
+            text-align: center;
+            font-size: 2em;
+            color: var(--title-color);
+            margin: 10px 0 15px;
+            letter-spacing: 1px;
+        }
+
+        .ornamental-divider {
+            border: 0;
+            height: 1px;
+            background-color: var(--border-color);
+            position: relative;
+            margin: 20px auto;
+            width: 70%;
+        }
+
+        .ornamental-divider::after {
+            content: '❖';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--container-bg-color);
+            padding: 0 12px;
+            color: var(--title-color);
+            font-size: 1.4em;
+            line-height: 1;
+        }
+
+        .info-panel {
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: var(--item-bg-color);
+        }
+
+        .info-panel > summary {
+            font-family: var(--title-font);
+            font-weight: 700;
+            font-size: 1em;
+            color: var(--title-color);
+            background-color: var(--item-bg-selected-color);
+            padding: 12px 15px;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .arrow-toggle {
+            font-size: 0.9em;
+        }
+
+        .info-content {
+            padding: 15px;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .info-content h3 {
+            font-family: var(--title-font);
+            color: var(--title-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+            margin: 15px 0 10px;
+            font-size: 1.2em;
+        }
+
+        .world-quote {
+            background-color: rgba(245, 239, 230, 0.5);
+            border-left: 3px solid var(--border-strong-color);
+            padding: 10px 15px;
+            margin: 12px 0;
+            font-style: italic;
+            color: #5d4037;
+            font-size: 0.9em;
+        }
+
+        .main-title {
+            font-family: var(--title-font);
+            font-weight: 700;
+            color: var(--title-color);
+            text-align: center;
+            margin: 0 0 15px;
+            font-size: 1.6em;
+        }
+
+        .instructions {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #6a514d;
+            line-height: 1.5;
+        }
+
+        /* 按钮样式（移动端触摸优化） */
+        .recheck-button, .submit-button {
             font-family: var(--body-font);
             font-weight: 500;
             font-size: 1em;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .recheck-button {
             color: var(--title-color);
             background-color: var(--item-bg-color);
             border: 1px solid var(--border-color);
-            padding: 8px 25px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
+            margin: 0 5px;
+            min-width: 120px;
         }
 
-        .recheck-button:hover {
+        .recheck-button:hover, .recheck-button:active {
             background-color: var(--item-bg-hover-color);
+            border-color: var(--border-strong-color);
+            transform: scale(1.03);
+        }
+
+        .submit-button {
+            font-family: var(--title-font);
+            color: var(--title-color);
+            background-color: var(--item-bg-selected-color);
+            border: 1px solid var(--border-strong-color);
+            width: 100%;
+            margin-top: 15px;
+            padding: 14px;
+            font-size: 1.05em;
+        }
+
+        .submit-button:hover, .submit-button:active {
+            background-color: #c9bba9;
+            transform: scale(1.02);
+        }
+
+        .step-footer {
+            text-align: center;
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* 选项列表（移动端触摸优化） */
+        .scenario-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .scenario-option {
+            font: inherit;
+            color: inherit;
+            background: var(--item-bg-color);
+            border: 1px solid var(--border-color);
+            text-align: left;
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            font-size: 1em;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .scenario-option::before {
+            content: '📜';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            opacity: 0.7;
+        }
+
+        .scenario-option:hover, .scenario-option:active {
+            background-color: var(--item-bg-hover-color);
+            border-color: var(--border-strong-color);
+            transform: translateX(3px);
+        }
+
+        .scenario-option.selected {
+            background-color: var(--item-bg-selected-color);
+            border-color: var(--title-color);
+            color: var(--title-color);
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .scenario-option.selected::after {
+            content: '✓';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: bold;
+            color: var(--title-color);
+        }
+
+        .control-panel-container {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: rgba(253, 250, 245, 0.95);
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 表单样式（移动端适配） */
+        .custom-char-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--title-color);
+            font-size: 1em;
+        }
+
+        .form-input {
+            padding: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: var(--body-font);
+            font-size: 1em;
+            background-color: var(--item-bg-color);
+            color: var(--text-color);
+            width: 100%;
+        }
+
+        .form-input:focus {
+            outline: none;
             border-color: var(--border-strong-color);
         }
 
-        .clear-cache-button {
-            font-family: var(--body-font);
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            g            font-family: var(--body-font);
             font-weight: 500;
             font-size: 1em;
             color: #721c24;
