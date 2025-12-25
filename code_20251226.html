@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>汉末红颜录·极简版</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "宋体", serif;
+        }
+
+        body {
+            background-color: #f5efe6;
+            color: #4a3b31;
+            padding: 15px;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #f9f5f0;
+            border: 2px solid #785a4e;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 100%;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #5d4037;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 1.8em;
+            border-bottom: 1px solid #d3c5b3;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.4em;
+        }
+
+        .tab {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #d3c5b3;
+            border-radius: 6px;
+            background-color: #f9f5f0;
+            color: #5d4037;
+            font-size: 1em;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background-color: #d7c8b6;
+            border-color: #785a4e;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #5d4037;
+        }
+
+        input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d3c5b3;
+            border-radius: 6px;
+            font-size: 1em;
+            background-color: #fff;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px;
+            border: 1px solid #d3c5b3;
+            border-radius: 6px;
+            flex: 1 1 calc(50% - 4px);
+        }
+
+        .slider-container {
+            margin: 10px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            accent-color: #785a4e;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            background-color: #d7c8b6;
+            color: #5d4037;
+            font-size: 1.05em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .btn-secondary {
+            background-color: #f9f5f0;
+            border: 1px solid #d3c5b3;
+            margin-top: 10px;
+        }
+
+        .list-item {
+            padding: 12px;
+            border: 1px solid #d3c5b3;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .list-item.selected {
+            background-color: #d7c8b6;
+            border-color: #785a4e;
+        }
+
+        #success {
+            display: none;
+            text-align: center;
+        }
+
+        #summary {
+            text-align: left;
+            line-height: 1.8;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>汉末红颜录</h1>
+
+        <!-- 核心页面：角色创建 -->
+        <div id="create">
+            <div class="tab">
+                <button class="tab-btn active" data-tab="preset">预设场景</button>
+                <button class="tab-btn" data-tab="custom">自定义角色</button>
+            </div>
+
+            <!-- 预设场景 -->
+            <div class="tab-content active" id="preset">
+                <h2>选择开局场景</h2>
+                <div class="list-item" data-scene="1">洛阳深宅·诸侯之妻</div>
+                <div class="list-item" data-scene="2">襄阳别院·名士之妻</div>
+                <div class="list-item" data-scene="3">江东水乡·将门之妻</div>
+                <div class="list-item" data-scene="4">涿县农家·平民之妻</div>
+                <div class="list-item" data-scene="5">长安古道·流亡贵女</div>
+                <div class="list-item" data-scene="6">成都市井·商户之妻</div>
+                <button class="btn" onclick="selectScene()">确认场景</button>
+            </div>
+
+            <!-- 自定义角色 -->
+            <div class="tab-content" id="custom">
+                <h2>自定义角色</h2>
+                <div class="form-group">
+                    <label>姓名</label>
+                    <input type="text" id="name" placeholder="如：甄氏" required>
+                </div>
+                <div class="form-group">
+                    <label>身份</label>
+                    <input type="text" id="identity" placeholder="如：郡守之女" required>
+                </div>
+                <div class="form-group">
+                    <label>年龄</label>
+                    <input type="number" id="age" min="16" max="40" value="18">
+                </div>
+                <div class="form-group">
+                    <label>配偶情况</label>
+                    <div class="radio-group">
+                        <label class="radio-option"><input type="radio" name="spouse" value="诸侯名将" checked> 诸侯/名将</label>
+                        <label class="radio-option"><input type="radio" name="spouse" value="名士文人"> 名士/文人</label>
+                        <label class="radio-option"><input type="radio" name="spouse" value="平民商户"> 平民/商户</label>
+                        <label class="radio-option"><input type="radio" name="spouse" value="暂无配偶"> 暂无配偶</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>核心属性（总分35）</label>
+                    <div class="slider-container">
+                        <div class="slider-label"><span>武力</span><span id="forceVal">5</span></div>
+                        <input type="range" class="slider" id="force" min="1" max="10" value="5" oninput="updateStat('force')">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-label"><span>体魄</span><span id="bodyVal">7</span></div>
+                        <input type="range" class="slider" id="body" min="1" max="10" value="7" oninput="updateStat('body')">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-label"><span>智谋</span><span id="wisdomVal">7</span></div>
+                        <input type="range" class="slider" id="wisdom" min="1" max="10" value="7" oninput="updateStat('wisdom')">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-label"><span>领导</span><span id="leadVal">5</span></div>
+                        <input type="range" class="slider" id="lead" min="1" max="10" value="5" oninput="updateStat('lead')">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-label"><span>魅力</span><span id="charmVal">11</span></div>
+                        <input type="range" class="slider" id="charm" min="1" max="10" value="11" oninput="updateStat('charm')">
+                    </div>
+                </div>
+                <button class="btn" onclick="submitCustom()">确认角色</button>
+            </div>
+        </div>
+
+        <!-- 剧情选择 -->
+        <div id="plot" style="display: none;">
+            <h2>选择初始剧情</h2>
+            <div class="list-item" data-plot="1">深宅夜话·夫君欲起兵讨贼</div>
+            <div class="list-item" data-plot="2">乱世流亡·带族人避祸</div>
+            <div class="list-item" data-plot="3">医馆救人·战乱治瘟疫</div>
+            <div class="list-item" data-plot="4">偶遇名士·共论天下</div>
+            <div class="list-item" data-plot="5">化解商户危机</div>
+            <div class="list-item" data-plot="6">自定义剧情</div>
+            <textarea id="customPlot" placeholder="输入自定义剧情" style="display: none; margin-top: 10px;"></textarea>
+            <button class="btn" onclick="selectPlot()">确认剧情</button>
+            <button class="btn btn-secondary" onclick="backToCreate()">返回</button>
+        </div>
+
+        <!-- 成功页 -->
+        <div id="success">
+            <h2>角色创建成功！</h2>
+            <div id="summary"></div>
+            <button class="btn" onclick="startGame()">开启旅程</button>
+        </div>
+    </div>
+
+    <script>
+        // 全局状态（极简）
+        let state = {
+            selectedScene: null,
+            selectedPlot: null,
+            charData: null,
+            stats: { force: 5, body: 7, wisdom: 7, lead: 5, charm: 11 }
+        };
+
+        // 标签切换
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(tab).classList.add('active');
+            });
+        });
+
+        // 预设场景选择
+        document.querySelectorAll('.list-item[data-scene]').forEach(item => {
+            item.addEventListener('click', () => {
+                state.selectedScene = item.dataset.scene;
+                document.querySelectorAll('.list-item[data-scene]').forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+            });
+        });
+
+        // 剧情选择
+        document.querySelectorAll('.list-item[data-plot]').forEach(item => {
+            item.addEventListener('click', () => {
+                state.selectedPlot = item.dataset.plot;
+                document.querySelectorAll('.list-item[data-plot]').forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+                document.getElementById('customPlot').style.display = state.selectedPlot === '6' ? 'block' : 'none';
+            });
+        });
+
+        // 属性更新
+        function updateStat(type) {
+            const val = document.getElementById(type).value;
+            const diff = val - state.stats[type];
+            const total = Object.values(state.stats).reduce((a, b) => a + b, 0);
+            if (total + diff <= 35 && total + diff >= 5) {
+                state.stats[type] = parseInt(val);
+                document.getElementById(`${type}Val`).textContent = val;
+            } else {
+                document.getElementById(type).value = state.stats[type];
+            }
+        }
+
+        // 选择场景
+        function selectScene() {
+            if (!state.selectedScene) {
+                alert('请选择场景');
+                return;
+            }
+            const sceneMap = {
+                '1': { name: '甄氏', identity: '诸侯之妻', age: 20, spouse: '诸侯名将', stats: { force: 4, body: 6, wisdom: 8, lead: 6, charm: 11 }, location: '洛阳', goal: '辅佐夫君' },
+                '2': { name: '蔡琰', identity: '名士之妻', age: 19, spouse: '名士文人', stats: { force: 3, body: 5, wisdom: 9, lead: 4, charm: 10 }, location: '襄阳', goal: '扬名立万' },
+                '3': { name: '吴苋', identity: '将门之妻', age: 22, spouse: '诸侯名将', stats: { force: 7, body: 8, wisdom: 6, lead: 7, charm: 7 }, location: '江东', goal: '守护家族' },
+                '4': { name: '王氏', identity: '平民之妻', age: 18, spouse: '平民商户', stats: { force: 5, body: 8, wisdom: 5, lead: 4, charm: 8 }, location: '涿县', goal: '相夫教子' },
+                '5': { name: '刘氏', identity: '流亡贵女', age: 21, spouse: '暂无配偶', stats: { force: 4, body: 7, wisdom: 8, lead: 5, charm: 9 }, location: '长安', goal: '乱世求生' },
+                '6': { name: '孙氏', identity: '商户之妻', age: 19, spouse: '平民商户', stats: { force: 3, body: 6, wisdom: 7, lead: 6, charm: 8 }, location: '成都', goal: '辅佐夫君' }
+            };
+            state.charData = sceneMap[state.selectedScene];
+            document.getElementById('create').style.display = 'none';
+            document.getElementById('plot').style.display = 'block';
+        }
+
+        // 提交自定义角色
+        function submitCustom() {
+            const name = document.getElementById('name').value.trim();
+            const identity = document.getElementById('identity').value.trim();
+            if (!name || !identity) {
+                alert('请填写姓名和身份');
+                return;
+            }
+            state.charData = {
+                name: name,
+                identity: identity,
+                age: document.getElementById('age').value,
+                spouse: document.querySelector('input[name="spouse"]:checked').value,
+                stats: state.stats,
+                location: '洛阳',
+                goal: '相夫教子'
+            };
+            document.getElementById('create').style.display = 'none';
+            document.getElementById('plot').style.display = 'block';
+        }
+
+        // 选择剧情
+        function selectPlot() {
+            if (!state.selectedPlot) {
+                alert('请选择剧情');
+                return;
+            }
+            const plotMap = {
+                '1': '深宅夜话·夫君欲起兵讨贼，问你意见',
+                '2': '乱世流亡·家族遭兵祸，带族人寻找安身之处',
+                '3': '医馆救人·战乱中瘟疫横行，凭医术救治乡邻',
+                '4': '偶遇名士·游学途中偶遇名士，共论天下大势',
+                '5': '化解商户危机·夫君经商遇劫，出面解决',
+                '6': document.getElementById('customPlot').value.trim() || '自定义剧情：乱世开启新旅程'
+            };
+            const plotText = plotMap[state.selectedPlot];
+            document.getElementById('summary').innerHTML = `
+                <p>姓名：${state.charData.name}</p>
+                <p>身份：${state.charData.identity}（${state.charData.age}岁）</p>
+                <p>配偶：${state.charData.spouse}</p>
+                <p>属性：武力${state.charData.stats.force} · 体魄${state.charData.stats.body} · 智谋${state.charData.stats.wisdom} · 领导${state.charData.stats.lead} · 魅力${state.charData.stats.charm}</p>
+                <p>剧情：${plotText}</p>
+            `;
+            document.getElementById('plot').style.display = 'none';
+            document.getElementById('success').style.display = 'block';
+        }
+
+        // 返回角色创建
+        function backToCreate() {
+            document.getElementById('plot').style.display = 'none';
+            document.getElementById('create').style.display = 'block';
+        }
+
+        // 启动游戏（适配ST）
+        function startGame() {
+            const ST = window.SillyTavern || {};
+            const char = state.charData;
+            const plotText = document.querySelector('#summary p:last-child').textContent.replace('剧情：', '');
+            const startMsg = `汉末乱世，${char.name}（${char.identity}，${char.age}岁）开启旅程。${char.spouse}，属性：武力${char.stats.force}、体魄${char.stats.body}、智谋${char.stats.wisdom}、领导${char.stats.lead}、魅力${char.stats.charm}。剧情：${plotText} 故事展开...`;
+
+            if (ST.chat && ST.createChat) {
+                ST.createChat({ title: `${char.name}的汉末之旅`, mes: startMsg, swipes: [startMsg] });
+                ST.saveChat && ST.saveChat();
+                ST.reloadCurrentChat && ST.reloadCurrentChat();
+                window.close && window.close();
+            } else {
+                alert('角色创建成功！请在SillyTavern中开启对话');
+            }
+        }
+    </script>
+</body>
+</html>
