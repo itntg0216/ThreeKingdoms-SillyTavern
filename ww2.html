@@ -1,40 +1,248 @@
-<!doctype html>
+<!-- status_bar_ww2.html -->
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <title>汉末红颜录·极简版</title>
+    <meta charset="UTF-8">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: "宋体", serif;
+        :root {
+            /* 1940s 风格配色 */
+            --bg-color: #2c2b29; /* 战地灰黑 */
+            --text-main: #dcdcdc;
+            --text-dim: #888;
+            --bar-bg: #1a1a1a;
+            --health-color: #a93226; /* 干涸血红 */
+            --stamina-color: #d4ac0d; /* 饥饿黄 */
+            --mental-color: #2471a3; /* 冷酷蓝 */
+            --border-color: #555;
+            --font-family: "Courier New", Courier, monospace; /* 打字机风格 */
         }
 
         body {
-            background-color: #f5efe6;
-            color: #4a3b31;
-            padding: 15px;
-            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+            background: transparent; /* 允许嵌入 */
         }
 
-        .container {
-            background-color: #f9f5f0;
-            border: 2px solid #785a4e;
-            border-radius: 8px;
-            padding: 20px;
-            max-width: 100%;
+        /* 状态栏容器 */
+        .status-bar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(44, 43, 41, 0.95);
+            border-bottom: 2px solid var(--border-color);
+            padding: 8px 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+            color: var(--text-main);
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 14px;
         }
 
-        h1, h2 {
-            text-align: center;
-            color: #5d4037;
-            margin-bottom: 20px;
+        /* 左侧：个人信息与身份 */
+        .section-identity {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 25%;
         }
 
-        h1 {
-            font-size: 1.8em;
+        .avatar-placeholder {
+            width: 48px;
+            height: 48px;
+            background: #444;
+            border: 1px solid #777;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #aaa;
+        }
+
+        .info-block {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .name-text {
+            font-weight: bold;
+            font-size: 16px;
+            letter-spacing: 1px;
+        }
+
+        .role-text {
+            font-size: 12px;
+            color: #aaa;
+            background: #222;
+            padding: 1px 4px;
+            border-radius: 2px;
+            border: 1px solid #444;
+        }
+
+        /* 中间：生存三维指标 (条状) */
+        .section-vitals {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 6px;
+            width: 40%;
+            padding: 0 20px;
+            border-left: 1px solid #444;
+            border-right: 1px solid #444;
+        }
+
+        .vital-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .vital-label {
+            width: 30px;
+            font-size: 12px;
+            text-align: right;
+            opacity: 0.8;
+        }
+
+        .bar-container {
+            flex-grow: 1;
+            height: 8px;
+            background: var(--bar-bg);
+            border: 1px solid #444;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        /* 状态指示灯/文字 */
+        .vital-value {
+            width: 45px;
+            font-size: 11px;
+            text-align: right;
+        }
+
+        /* 右侧：环境与物资 */
+        .section-environment {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            width: 30%;
+            font-size: 12px;
+        }
+
+        .env-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .location-tag {
+            color: #d35400; /* 战区橙 */
+        }
+
+        .time-tag {
+            color: #999;
+        }
+
+        .supplies-grid {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .supply-item {
+            background: #222;
+            padding: 2px 6px;
+            border: 1px solid #444;
+            font-size: 11px;
+            color: #bbb;
+        }
+
+        /* 状态修饰类 */
+        .bar-health { background-color: var(--health-color); }
+        .bar-stamina { background-color: var(--stamina-color); }
+        .bar-mental { background-color: var(--mental-color); }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .status-bar-container { flex-direction: column; height: auto; gap: 10px; }
+            .section-identity, .section-vitals, .section-environment { width: 100%; border: none; align-items: flex-start; }
+            .section-environment { align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="status-bar-container">
+    <!-- 1. 身份模块: 对应 <角色:档案> -->
+    <div class="section-identity">
+        <div class="avatar-placeholder">IMG</div>
+        <div class="info-block">
+            <!-- 对应 variables_update_rules 中的 {{user}} 名字 -->
+            <span class="name-text">约翰·多伊</span>
+            <!-- 对应 <身份>: 显示当前伪装，如 "身份: 战地记者 (伪装)" -->
+            <span class="role-text">身份: 抵抗组织联络员</span>
+        </div>
+    </div>
+
+    <!-- 2. 生存指标模块: 对应 <角色:生理指标> -->
+    <div class="section-vitals">
+        <!-- 健康状况 (Health) -->
+        <div class="vital-row">
+            <span class="vital-label">H.P.</span>
+            <div class="bar-container">
+                <!-- width 根据 健康状况(0-100) 动态调整 -->
+                <div class="bar-fill bar-health" style="width: 75%;"></div>
+            </div>
+            <span class="vital-value">轻伤</span>
+        </div>
+
+        <!-- 体能状态 (Stamina) -->
+        <div class="vital-row">
+            <span class="vital-label">S.T.</span>
+            <div class="bar-container">
+                <!-- width 根据 体能状态(0-100) 动态调整 -->
+                <div class="bar-fill bar-stamina" style="width: 40%;"></div>
+            </div>
+            <span class="vital-value">饥饿</span>
+        </div>
+
+        <!-- 精神状态 (Mental) -->
+        <div class="vital-row">
+            <span class="vital-label">M.E.</span>
+            <div class="bar-container">
+                <!-- width 根据 精神状态(数值化后) 动态调整 -->
+                <div class="bar-fill bar-mental" style="width: 60%;"></div>
+            </div>
+            <span class="vital-value">紧张</span>
+        </div>
+    </div>
+
+    <!-- 3. 环境与物资模块: 对应 <世界> 和 <物资> -->
+    <div class="section-environment">
+        <div class="env-row">
+            <!-- 对应 <世界:地点> -->
+            <span class="location-tag">📍 华沙 - 犹太隔离区</span>
+            <!-- 对应 <世界:时间> -->
+            <span class="time-tag">1941-10-02 23:15</span>
+        </div>
+
+        <!-- 对应 <装备:武器> 或 <物资:硬通货> -->
+        <div class="supplies-grid">
+            <div class="supply-item">🔫 鲁格P08 (3/8)</div>
+            <div class="supply-item">🍞 黑面包 (x1)</div>
+            <div class="supply-item">💰 帝国马克: 50</div>
+        </div>
+    </div>
+</div>
+
+</body>            font-size: 1.8em;
             border-bottom: 1px solid #d3c5b3;
             padding-bottom: 10px;
         }
