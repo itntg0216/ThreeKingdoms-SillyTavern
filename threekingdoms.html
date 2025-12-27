@@ -1,73 +1,329 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>汉末红颜录·快速创建角色</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1941 自由沙盒档案 - WW2 Sandbox Dossier</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Serif+SC:wght@400;500;700&display=swap');
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         :root {
-            --bg-color: #f5efe6;
-            --text-color: #4a3b31;
-            --border-color: #d3c5b3;
-            --border-strong-color: #785a4e;
-            --title-color: #5d4037;
-            --item-bg-color: rgba(253, 250, 245, 0.95);
-            --item-bg-hover-color: #e8ddcb;
-            --item-bg-selected-color: #d7c8b6;
-            --container-bg-color: rgba(240, 230, 210, 0.95);
-            --title-font: 'Cinzel', serif;
-            --body-font: 'Noto Serif SC', serif;
+            --bg-color: #1a1a1a;
+            --paper-color: #f0f0e6;
+            --ink-color: #2b2b2b;
+            --red-stamp: #8a1c1c;
+            --typewriter-font: "Courier New", Courier, monospace;
         }
 
         body {
-            font-family: var(--body-font);
             background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 15px;
+            color: var(--ink-color);
+            font-family: var(--typewriter-font);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            background-image: url('data:image/png;base64,iVBORw0KUAhEUgAAADIAAAAyCAMAAAAp4XiGAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAADdAAAA3QFwU6IHAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABbUExURQAAAP////f3+Pj4+fX19vb2+PT09Pj4+d/f4O/v8fPz9PX19vf3+Pn5+fb29/Hx8/T09fX19fX19////97e4Ojo6fHx8/Ly8/X19fX19fDw8vX19e/v8fj4+Pf3+AAAADSAx5YAAAAfdFJOUwAAAAAAAAAAAAAAAMA/z/BAgMBAwBCgwFBPT1BQUD9/Py8vRkQoCgAAAQBJREFUSMftlVuSgyAQhUNtZRAScQExPff9H3CBQsEMZDDpOf2EM8P9NZnZzI5KEfEPMGOIsIApFgAAFDtAAmWiIAMAWGDVQDQAAkYMm9RhpJbrBLhZ1Z6yGvWq2xWA92i6ZXRtC50EAADg0n8ErvDY2esxAEBW96Fz0Npq7H0AGBzh6MrAgAAgAEEyNiyL00mDgCsvt9jX6gAEEPg2pS8HAABgB2b0ONnuaR4AQDG9OQCAfQD8XRsBACJmk/+1WwUALg7A8IUBjgh0JGBgAJY2YB+S/VB9aKjpx5EDP5HAPk7Jm4tJgLeJ3I0LANT3/k7K/r5Q/AAAFYxxfYq1LAAAAABJRU5ErkJggg==');
-            background-repeat: repeat;
+            background-image: radial-gradient(#2a2a2a 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
-        .selector-scroll {
-            border: 2px solid var(--border-strong-color);
-            border-radius: 12px;
-            padding: 20px 15px;
-            background-color: var(--container-bg-color);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        .container {
+            background-color: var(--paper-color);
             width: 100%;
-            max-width: 100%;
-            margin: 0 auto;
-        }
-
-        .page-super-title {
-            font-family: var(--title-font);
-            font-weight: 700;
-            text-align: center;
-            font-size: 2em;
-            color: var(--title-color);
-            margin: 10px 0 15px;
-            letter-spacing: 1px;
-        }
-
-        .ornamental-divider {
-            border: 0;
-            height: 1px;
-            background-color: var(--border-color);
+            max-width: 800px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             position: relative;
-            margin: 15px auto;
-            width: 70%;
+            border: 1px solid #ccc;
         }
 
-        .ornamental-divider::after {
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                linear-gradient(rgba(255,255,255,0.1), rgba(0,0,0,0.1)),
+                url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiAvPgo8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSIjY2NjIiAvPgo8L3N2Zz4=');
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid var(--ink-color);
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+        }
+
+        h1 {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .sub-header {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .stamp-box {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            border: 3px double var(--red-stamp);
+            color: var(--red-stamp);
+            padding: 5px 10px;
+            font-weight: bold;
+            transform: rotate(-15deg);
+            font-size: 18px;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            background: transparent;
+            border: 1px solid #999;
+            border-bottom: 2px solid var(--ink-color);
+            font-family: var(--typewriter-font);
+            font-size: 16px;
+            color: var(--ink-color);
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            background: rgba(0,0,0,0.05);
+            border-bottom-color: #000;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .stats-panel {
+            background: rgba(0,0,0,0.03);
+            border: 1px dashed var(--ink-color);
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            border-bottom: 1px dotted #ccc;
+            padding-bottom: 5px;
+        }
+
+        .stat-input {
+            width: 80px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .btn {
+            background: var(--ink-color);
+            color: var(--paper-color);
+            border: none;
+            padding: 10px 20px;
+            font-family: var(--typewriter-font);
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: all 0.2s;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: #000;
+        }
+
+        .notice {
+            font-size: 12px;
+            color: var(--red-stamp);
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        #output-area {
+            margin-top: 30px;
+            display: none;
+        }
+
+        textarea.code-block {
+            width: 100%;
+            height: 300px;
+            background: #222;
+            color: #0f0;
+            font-family: monospace;
+            padding: 10px;
+            border: none;
+            resize: vertical;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="stamp-box">FREE FORM<br>APPROVED</div>
+
+    <div class="header">
+        <h1>人员背景审查档案</h1>
+        <div class="sub-header">PERSONNEL BACKGROUND CHECK DOSSIER - FORM 1941-C (CUSTOM)</div>
+    </div>
+
+    <div class="form-grid">
+        <!-- 基础信息 -->
+        <div class="form-group">
+            <label>姓名 / Name</label>
+            <input type="text" id="name" placeholder="请输入姓名">
+        </div>
+        <div class="form-group">
+            <label>国籍 / Nationality</label>
+            <input type="text" id="nationality" placeholder="例如：德国、苏联、无国籍...">
+        </div>
+
+        <div class="form-group">
+            <label>性别 / Gender</label>
+            <select id="gender">
+                <option value="男">男性 (Male)</option>
+                <option value="女">女性 (Female)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>年龄 / Age</label>
+            <input type="number" id="age" value="25" min="14" max="90">
+        </div>
+
+        <!-- 自由定义部分 -->
+        <div class="form-group full-width">
+            <label>人生目标 / Life Goal</label>
+            <input type="text" id="life-goal" placeholder="例如：活着回到家乡、刺杀某位军官、寻找失散的亲人...">
+        </div>
+
+        <div class="form-group full-width">
+            <label>战时身份 / Wartime Identity</label>
+            <input type="text" id="identity" placeholder="例如：被征召的教师、潜伏的特工、流浪的孤儿...">
+        </div>
+
+        <!-- 自定义开局剧情 -->
+        <div class="form-group full-width">
+            <label>开局剧情 / Opening Scenario</label>
+            <textarea id="intro-story" rows="4" placeholder="在此定义你的开始：时间、地点、正在发生的事情。例如：1941年12月7日清晨，你在莫斯科郊外的废墟中醒来，手里只有一块冻硬的面包..."></textarea>
+        </div>
+
+        <!-- 可定义生理体检面板 -->
+        <div class="form-group full-width stats-panel">
+            <label style="border-bottom: 1px solid #999; padding-bottom: 5px;">身体素质自评 / PHYSICAL SELF-ASSESSMENT</label>
+            <div style="margin-top: 10px;">
+                <div class="stat-row">
+                    <span>体质 (Constitution) <br><small style="opacity:0.6">抗病/负重/伤口愈合 (0-100)</small></span>
+                    <input type="number" class="stat-input" id="val-con" value="70" min="0" max="100">
+                </div>
+                <div class="stat-row">
+                    <span>耐力 (Stamina) <br><small style="opacity:0.6">抗寒/抗饿/行军距离 (0-100)</small></span>
+                    <input type="number" class="stat-input" id="val-sta" value="70" min="0" max="100">
+                </div>
+                <div class="stat-row">
+                    <span>意志 (Willpower) <br><small style="opacity:0.6">抗压/精神崩溃阈值 (0-100)</small></span>
+                    <input type="number" class="stat-input" id="val-men" value="70" min="0" max="100">
+                </div>
+            </div>
+        </div>
+
+        <!-- 初始物资 -->
+        <div class="form-group full-width">
+            <label>携带物品申报 / PERSONAL EFFECTS</label>
+            <textarea id="items" rows="3" placeholder="例如：一张模糊的照片、半包香烟、生锈的小刀..."></textarea>
+        </div>
+    </div>
+
+    <button type="button" class="btn" onclick="generateDossier()">生成档案并归档 (GENERATE DOSSIER)</button>
+
+    <!-- 输出区域 -->
+    <div id="output-area">
+        <label>系统初始化指令 [InitVar]</label>
+        <p class="notice">请复制下方内容至AI对话框开启故事</p>
+        <textarea id="result" class="code-block" readonly></textarea>
+    </div>
+</div>
+
+<script>
+    // 生成YAML格式
+    function generateDossier() {
+        const name = document.getElementById('name').value || "无名氏";
+        const nationality = document.getElementById('nationality').value || "未知";
+        const gender = document.getElementById('gender').value;
+        const age = document.getElementById('age').value;
+        const lifeGoal = document.getElementById('life-goal').value || "存活";
+        const identity = document.getElementById('identity').value || "流民";
+        const introStory = document.getElementById('intro-story').value || "你在战火中醒来，不知道前路在何方。";
+
+        const con = document.getElementById('val-con').value;
+        const sta = document.getElementById('val-sta').value;
+        const menVal = parseInt(document.getElementById('val-men').value);
+
+        // 精神状态描述转换
+        let menDesc = "稳定";
+        if (menVal < 30) menDesc = "崩溃边缘";
+        else if (menVal < 50) menDesc = "紧张脆弱";
+        else if (menVal > 80) menDesc = "钢铁意志";
+
+        const itemsRaw = document.getElementById('items').value;
+
+        // 构建YAML
+        const yaml = `# 1941自由沙盒档案初始化
+世界:
+  时间: '1941-12-07'
+  地点: '自定义开局点'
+  开局剧情: |
+    ${introStory.replace(/\n/g, '\n    ')}
+角色:
+  档案:
+    姓名: '${name}'
+    性别/年龄: '${gender}/${age}岁'
+    国籍: '${nationality}'
+    战时身份: ['${identity}']
+    人生目标: '${lifeGoal}'
+  生理指标:
+    健康状况: ${con}
+    体能状态: ${sta}
+    精神状态: '${menDesc}' # 意志值:${menVal}
+  当前状态: ['自定义开局']
+背包:
+  初始物品:
+    描述: '${itemsRaw || "身无分文"}'
+物资与经济:
+  本地货币: 0
+  配给凭证: {}
+人际关系网:
+  所属阵营声望: 0
+  敌对阵营伪装        .ornamental-divider::after {
             content: '❖';
             position: absolute;
             top: 50%;
