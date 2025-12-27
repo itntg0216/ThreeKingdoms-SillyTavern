@@ -1,40 +1,343 @@
-<!-- status_bar_ww2.html -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1941 Survival Monitor</title>
     <style>
+        /* =========================================
+           基础风格：二战野战电台/机密档案风格
+           ========================================= */
         :root {
-            /* 1940s 风格配色 */
-            --bg-color: #2c2b29; /* 战地灰黑 */
-            --text-main: #dcdcdc;
-            --text-dim: #888;
-            --bar-bg: #1a1a1a;
-            --health-color: #a93226; /* 干涸血红 */
-            --stamina-color: #d4ac0d; /* 饥饿黄 */
-            --mental-color: #2471a3; /* 冷酷蓝 */
-            --border-color: #555;
-            --font-family: "Courier New", Courier, monospace; /* 打字机风格 */
+            --bg-dark: #121212;
+            --panel-bg: #1e1e1e;
+            --text-main: #c0c0c0;
+            --text-highlight: #f0f0f0;
+            --accent-red: #8a1c1c;   /* 健康/警告 */
+            --accent-yellow: #d4a017; /* 体能/警示 */
+            --accent-blue: #5f7d8b;   /* 理智/冷峻 */
+            --border-color: #333;
+            --font-stack: "Courier New", Courier, monospace;
         }
 
         body {
             margin: 0;
-            padding: 0;
-            font-family: var(--font-family);
-            background: transparent; /* 允许嵌入 */
+            padding: 10px;
+            background-color: transparent; /* 允许透视背景 */
+            color: var(--text-main);
+            font-family: var(--font-stack);
+            user-select: none;
+            overflow: hidden;
         }
 
-        /* 状态栏容器 */
-        .status-bar-container {
+        /* 主容器 */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 80px 1fr 200px;
+            gap: 10px;
+            background: rgba(30, 30, 30, 0.95);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        /* 装饰性的铆钉效果 */
+        .dashboard::before, .dashboard::after {
+            content: "+";
+            position: absolute;
+            color: #555;
+            font-size: 10px;
+        }
+        .dashboard::before { top: 2px; left: 2px; }
+        .dashboard::after { top: 2px; right: 2px; }
+
+        /* 左侧：头像与身份 */
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-right: 1px dashed var(--border-color);
+            padding-right: 10px;
+        }
+
+        .avatar-frame {
+            width: 60px;
+            height: 60px;
+            background: #000;
+            border: 2px solid #444;
+            margin-bottom: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: sepia(0.5) contrast(1.2); /* 老照片滤镜 */
+        }
+
+        .identity-badge {
+            font-size: 10px;
+            background: var(--accent-red);
+            color: white;
+            padding: 1px 4px;
+            border-radius: 2px;
+            margin-top: 2px;
+            text-transform: uppercase;
+        }
+
+        /* 中间：生存指标核心 */
+        .status-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .bar-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bar-label {
+            width: 45px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .progress-track {
+            flex-grow: 1;
+            height: 10px;
+            background: #000;
+            border: 1px solid #444;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 100%;
+            transition: width 0.5s ease, background-color 0.5s ease;
+        }
+
+        /* 动态颜色类 */
+        .fill-health { background: var(--accent-red); }
+        .fill-stamina { background: var(--accent-yellow); }
+        .fill-sanity { background: var(--accent-blue); }
+
+        .bar-value {
+            width: 35px;
+            font-size: 11px;
+            text-align: right;
+            font-family: monospace;
+        }
+
+        /* 右侧：环境与物资 */
+        .info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            border-left: 1px dashed var(--border-color);
+            padding-left: 10px;
+            font-size: 11px;
+        }
+
+        .info-row {
             display: flex;
             justify-content: space-between;
+        }
+
+        .info-label { color: #666; }
+        .info-val { color: var(--text-highlight); font-weight: bold; }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            margin-top: 5px;
+        }
+
+        .status-tag {
+            background: #333;
+            color: #aaa;
+            padding: 1px 4px;
+            font-size: 9px;
+            border: 1px solid #444;
+        }
+        .status-tag.alert {
+            background: #3d0000;
+            color: #ff5555;
+            border-color: #8a1c1c;
+            animation: pulse 2s infinite;
+        }
+
+        /* 底部：战时通讯滚动条 */
+        .news-ticker {
+            grid-column: 1 / -1;
+            background: #000;
+            color: var(--accent-yellow);
+            font-size: 10px;
+            padding: 2px 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            border-top: 1px solid var(--border-color);
+            margin-top: 5px;
+            display: flex;
             align-items: center;
-            background-color: rgba(44, 43, 41, 0.95);
-            border-bottom: 2px solid var(--border-color);
-            padding: 8px 16px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
-            color: var(--text-main);
-            width: 100%;
+        }
+
+        .ticker-label {
+            font-weight: bold;
+            margin-right: 10px;
+            color: #d4a017;
+        }
+
+        .ticker-content {
+            display: inline-block;
+            animation: marquee 15s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <!-- 1. 头像与身份 -->
+        <div class="profile-section">
+            <div class="avatar-frame">
+                <!-- 这里的src会在JS中被替换 -->
+                <img id="char-avatar" class="avatar-img" src="" alt="Portrait">
+            </div>
+            <div id="char-name" style="font-size: 12px; font-weight: bold;">UNKNOWN</div>
+            <div id="char-nation" class="identity-badge">N/A</div>
+        </div>
+
+        <!-- 2. 核心生存指标 (HP/STA/SAN) -->
+        <div class="status-section">
+            <!-- Health -->
+            <div class="bar-container">
+                <div class="bar-label" style="color:#ff6b6b">HLTH</div>
+                <div class="progress-track">
+                    <div id="bar-health" class="progress-fill fill-health" style="width: 100%;"></div>
+                </div>
+                <div id="val-health" class="bar-value">100%</div>
+            </div>
+
+            <!-- Stamina -->
+            <div class="bar-container">
+                <div class="bar-label" style="color:#ffd700">STAM</div>
+                <div class="progress-track">
+                    <div id="bar-stamina" class="progress-fill fill-stamina" style="width: 100%;"></div>
+                </div>
+                <div id="val-stamina" class="bar-value">100%</div>
+            </div>
+
+            <!-- Sanity -->
+            <div class="bar-container">
+                <div class="bar-label" style="color:#87ceeb">SANT</div>
+                <div class="progress-track">
+                    <div id="bar-sanity" class="progress-fill fill-sanity" style="width: 100%;"></div>
+                </div>
+                <div id="val-sanity" class="bar-value">STABLE</div>
+            </div>
+        </div>
+
+        <!-- 3. 环境与物资 -->
+        <div class="info-section">
+            <div class="info-row">
+                <span class="info-label">DATE:</span>
+                <span id="info-date" class="info-val">1941-12-07</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">LOC:</span>
+                <span id="info-loc" class="info-val">--</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">FUNDS:</span>
+                <span id="info-money" class="info-val">0</span>
+            </div>
+
+            <!-- 状态标签容器 -->
+            <div id="status-tags" class="tags-container">
+                <span class="status-tag">NORMAL</span>
+            </div>
+        </div>
+
+        <!-- 4. 战时通讯滚动条 -->
+        <div class="news-ticker">
+            <span class="ticker-label">>> COMMS:</span>
+            <span id="ticker-text" class="ticker-content">等待信号连接... / Waiting for signal...</span>
+        </div>
+    </div>
+
+<script>
+    // ==========================================
+    // 逻辑处理：监听 SillyTavern 的数据流
+    // ==========================================
+
+    const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = val;
+    };
+
+    const setBar = (id, val, max = 100) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        // 确保数值在0-100之间
+        let percent = (parseInt(val) / parseInt(max)) * 100;
+        percent = Math.max(0, Math.min(100, percent));
+        el.style.width = percent + '%';
+
+        // 低数值变色警告逻辑
+        if (percent < 20) {
+            el.style.filter = "brightness(0.7)";
+        } else {
+            el.style.filter = "none";
+        }
+    };
+
+    // 状态标签渲染
+    const renderTags = (tags) => {
+        const container = document.getElementById('status-tags');
+        container.innerHTML = '';
+        if (!tags || tags.length === 0) return;
+
+        tags.forEach(tag => {
+            const span = document.createElement('span');
+            span.className = 'status-tag';
+            span.innerText = tag;
+
+            // 如果是负面状态，加红
+            if (['受伤', '流血', '饥饿', '崩溃', '通缉', 'Wounded', 'Starving'].some(k => tag.includes(k))) {
+                span.className += ' alert';
+            }
+            container.appendChild(span);
+        });
+    };
+
+    // 核心更新函数
+    function updateStatus(data) {
+        if (!data) return;
+
+        // 1. 解析基础信息
+        // 假设AI输出的变量路径符合我们设定的JSON结构
+
+        // 角色名 & 头像 (SillyTavern通常会通过ifram            width: 100%;
             box-sizing: border-box;
             font-size: 14px;
         }
